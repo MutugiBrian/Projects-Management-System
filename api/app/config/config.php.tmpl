@@ -1,0 +1,32 @@
+<?php
+
+use \Phalcon\Config;
+
+return new Config(
+    [
+        'db'   => [
+            'adapter'     => 'Mysql',
+            'host'        => 'localhost',
+            'username'    => 'usr',
+            'password'        => 'pwd',
+            'dbname'      => 'db',
+            'port'        => 3306,
+        ],
+        'app'  => [
+            'upload_mission_report_path' => '/var/www/html/simon/mission-report/files/mr/',
+
+        ],
+        'email'   => [
+            'host'          => '2192.168.10.1',
+            'port'          =>  25,
+            'from_address'  => 'unenvironment.no-reply@unep.org',
+            'from_name'     => 'UN-Environment Mission Reports Notifications',
+        ],
+
+        'models'      => [
+            'metadata' => [
+                'adapter' => 'Memory'
+            ]
+        ]
+    ]
+);
