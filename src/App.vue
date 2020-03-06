@@ -14,7 +14,7 @@
     </div>
 
     <footer class="footer fixed-bottom text-center bg-info pt-2 pb-2">
-     <small class="text-white">&copy; 2019 ESS
+     <small class="text-white">&copy; BRIAN MUTUGI
 
      </small>
 
