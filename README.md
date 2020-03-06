@@ -1,4 +1,4 @@
-# chemicals
+# Projects Management System
 
 ## Project setup
 ```
