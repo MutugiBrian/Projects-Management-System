@@ -10,7 +10,7 @@ $app->get('/', function () use ($app) {
   echo 'API g v2';
 });
 
-$app->get('/project', function () use ($app) {
+$app->get('/projects/all', function () use ($app) {
    $app->response->setContentType("application/json");
    $app->response->setHeader('Access-Control-Allow-Origin', '*');
    $app->response->setHeader('Access-Control-Allow-Headers', 'X-Requested-With');      
@@ -137,6 +137,130 @@ $app->get('/project', function () use ($app) {
 
 });
 
+
+$app->get('/projects/country/{cn}', function ($cn) use ($app) {
+  
+	$app->response->setContentType("application/json");
+	$app->response->setHeader('Access-Control-Allow-Origin', '*');
+	$app->response->setHeader('Access-Control-Allow-Headers', 'X-Requested-With');      
+	$app->response->sendHeaders();
+ 
+	$country_data = [];
+  
+	
+	 $cfn = \Chemicals\Backend\Models\Country::find(array(
+					"iso_2  = '{$cn}'",
+					"columns" => "name,latitude,longitude"
+					));
+					
+	 foreach($cfn as $cfn){
+		 $cnn = $cfn->name;
+		 $lat = $cfn->latitude;
+		 $lon = $cfn->longitude;
+		 $country_data['projects']['name'] = $cnn;
+		 $country_data['projects']['latitude'] = $lat;
+		 $country_data['projects']['longitude'] = $lon;
+	 }
+					
+	 $country_data['name'] = $cfn['name'];
+	 $country_data['lat']  = $lat; 
+	 $country_data['lon']  = $lon; 
+ 
+	 
+	 $cp = \Chemicals\Backend\Models\ProjectCountryMap::find(array(
+					"country_iso_2 = '{$cn}'",
+					"columns" => "project_id"));
+	 $country_data['projects'] =[];			   
+	 $country_data['projects']['data'] =[];
+	 
+	 foreach($cp as $cp){
+		 $tp = $cp->project_id;
+		 $country_data['projects']['data'][] = $tp;
+	 }
+	 $country_data['projects']['count'] = count($country_data['projects']['data']);
+	 
+	 /**var_dump($country_data);
+	 exit;
+	 foreach($data as $data)
+		 {
+			 $tmp = $data->toArray();
+			 $tmp['country'] = \Chemicals\Backend\Models\ProjectCountryMap::find(array("project_id = {$data->id}"));
+			 
+			 $tmp['keywords'] = \Chemicals\Backend\Models\ProjectKeyWordMap::find(array(
+					 "project_id = {$data->id}"
+			 ));
+			 
+			 $tmp['regions'] = \Chemicals\Backend\Models\ProjectRegionMap::find(array(
+					 "project_id = {$data->id}"
+			 ));
+			 
+			 $more_data[] = $tmp;
+			 
+			 //$data->project_country = $project_country;
+			 
+			 //array_push($data, '3');
+		 
+		 }**/
+ 
+			 //return $data;
+   
+	$app->response->setContent( 
+		 \json_encode(
+			 [ 
+				'status' => 'OK',
+				'data'   => $country_data,
+			 ]
+		 )
+	);
+ 
+	return $app->response ;
+ 
+ });
+ $app->get('/projects/status/{status}', function ($id) use ($app) {
+  
+	$app->response->setContentType("application/json");
+	$app->response->setHeader('Access-Control-Allow-Origin', '*');
+	$app->response->setHeader('Access-Control-Allow-Headers', 'X-Requested-With');      
+	$app->response->sendHeaders();
+ 
+	$more_data = [];
+	$data = \Chemicals\Backend\Models\Project::find($id);
+	 foreach($data as $data)
+		 {
+			 $tmp = $data->toArray();
+			 $tmp['country'] = \Chemicals\Backend\Models\ProjectCountryMap::find(array("status = {$data->status}"));
+			 
+			 $tmp['keywords'] = \Chemicals\Backend\Models\ProjectKeyWordMap::find(array(
+					 "project_id = {$data->id}"
+			 ));
+			 
+			 $tmp['regions'] = \Chemicals\Backend\Models\ProjectRegionMap::find(array(
+					 "project_id = {$data->id}"
+			 ));
+			 
+			 $more_data[] = $tmp;
+			 
+			 //$data->project_country = $project_country;
+			 
+			 //array_push($data, '3');
+		 
+		 }
+ 
+			 //return $data;
+   
+	$app->response->setContent( 
+		 \json_encode(
+			 [ 
+				'status' => 'OK',
+				'data'   => $more_data,
+			 ]
+		 )
+	);
+ 
+	return $app->response ;
+ 
+ });
+
 $app->get('/project/{id}', function ($id) use ($app) {
   
    $app->response->setContentType("application/json");
@@ -183,84 +307,6 @@ $app->get('/project/{id}', function ($id) use ($app) {
 });
 
 
-$app->get('/country_project/{cn}', function ($cn) use ($app) {
-  
-   $app->response->setContentType("application/json");
-   $app->response->setHeader('Access-Control-Allow-Origin', '*');
-   $app->response->setHeader('Access-Control-Allow-Headers', 'X-Requested-With');      
-   $app->response->sendHeaders();
-
-   $country_data = [];
- 
-   
-    $cfn = \Chemicals\Backend\Models\Country::find(array(
-				   "iso_2  = '{$cn}'",
-                   "columns" => "name,latitude,longitude"
-                   ));
-				   
-	foreach($cfn as $cfn){
-		$cnn = $cfn->name;
-		$lat = $cfn->latitude;
-		$lon = $cfn->longitude;
-		$country_data['projects']['name'] = $cnn;
-		$country_data['projects']['latitude'] = $lat;
-		$country_data['projects']['longitude'] = $lon;
-	}
-				   
-    $country_data['name'] = $cfn['name'];
-    $country_data['lat']  = $lat; 
-    $country_data['lon']  = $lon; 
-
-	
-	$cp = \Chemicals\Backend\Models\ProjectCountryMap::find(array(
-	               "country_iso_2 = '{$cn}'",
-				   "columns" => "project_id"));
-	$country_data['projects'] =[];			   
-	$country_data['projects']['data'] =[];
-	
-	foreach($cp as $cp){
-		$tp = $cp->project_id;
-		$country_data['projects']['data'][] = $tp;
-	}
-	$country_data['projects']['count'] = count($country_data['projects']['data']);
-	
-	/**var_dump($country_data);
-	exit;
-    foreach($data as $data)
-        {
-			$tmp = $data->toArray();
-            $tmp['country'] = \Chemicals\Backend\Models\ProjectCountryMap::find(array("project_id = {$data->id}"));
-			
-			$tmp['keywords'] = \Chemicals\Backend\Models\ProjectKeyWordMap::find(array(
-                    "project_id = {$data->id}"
-            ));
-			
-			$tmp['regions'] = \Chemicals\Backend\Models\ProjectRegionMap::find(array(
-                    "project_id = {$data->id}"
-            ));
-			
-			$more_data[] = $tmp;
-			
-			//$data->project_country = $project_country;
-			
-			//array_push($data, '3');
-		
-        }**/
-
-            //return $data;
-  
-   $app->response->setContent( 
-		\json_encode(
-			[ 
-			   'status' => 'OK',
-			   'data'   => $country_data,
-			]
-		)
-   );
-
-   return $app->response ;
-
-});
 
 $app->get('/country_project', function () use ($app) {
   
